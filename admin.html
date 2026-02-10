@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background:#f0f2f5; color:#333; }
+a { text-decoration:none; color:inherit; }
+
+/* Sidebar */
+.sidebar { position:fixed; left:0; top:0; width:220px; height:100%; background:#4a90e2; color:#fff; display:flex; flex-direction:column; padding-top:20px; box-shadow:2px 0 8px rgba(0,0,0,0.1);}
+.sidebar h2 { text-align:center; margin-bottom:30px; font-size:1.5rem; }
+.sidebar a { padding:15px 20px; display:flex; align-items:center; gap:10px; font-weight:500; transition:0.2s; border-left:4px solid transparent;}
+.sidebar a:hover, .sidebar a.active { background:#357ABD; border-left:4px solid #fff; }
+
+/* Main */
+.main { margin-left:220px; padding:30px; }
+header { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:15px 20px; border-radius:10px; margin-bottom:30px; box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+header h2 { margin:0; font-size:1.3rem; }
+header button { background:#4a90e2; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:5px;}
+header button:hover { background:#357ABD; }
+
+/* Card */
+.card { background:#fff; padding:25px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.05); margin-bottom:30px; }
+.card h3 { margin-top:0; margin-bottom:20px; color:#4a90e2; }
+
+/* Staff Form */
+.card input[type="text"], .card input[type="email"], .card input[type="file"] { width:100%; max-width:300px; padding:10px 12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; outline:none; transition:0.2s;}
+.card input[type="text"]:focus, .card input[type="email"]:focus { border-color:#4a90e2; }
+.card label { display:inline-flex; align-items:center; font-weight:500; margin-bottom:15px; }
+.card input[type="checkbox"] { margin-right:8px; transform:scale(1.2); }
+.card button { background:#4a90e2; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:600; transition:0.2s; }
+.card button:hover { background:#357ABD; }
+#message { margin-top:10px; font-weight:500; color:#e74c3c; }
+
+/* Staff Grid */
+.staff-grid { display:flex; flex-wrap:wrap; gap:20px; margin-top:20px; }
+.staff-card { width:150px; background:#fff; border-radius:10px; text-align:center; padding:0; box-shadow:0 2px 6px rgba(0,0,0,0.1); cursor:pointer; transition:0.2s; position:relative; overflow:hidden; }
+.staff-card:hover { transform:translateY(-5px); box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.staff-card img { width:100%; height:150px; object-fit:cover; display:block; }
+.staff-card p { margin:10px 0; font-weight:600; font-size:0.95rem; color:#333; padding:0 5px; }
+.badge { position:absolute; top:8px; left:8px; background:#e74c3c; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:600; z-index:2; }
+
+/* Modal */
+.modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.5);}
+.modal-content { background:#fff; margin:10% auto; padding:20px; border-radius:10px; max-width:400px; position:relative; }
+.close { position:absolute; top:10px; right:15px; font-size:1.5rem; cursor:pointer; color:#333; }
+.modal-content input[type="text"], .modal-content input[type="email"], .modal-content input[type="file"] { width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc; }
+.modal-content img { width:100%; border-radius:10px; margin-bottom:10px; }
+
+/* Dashboard Cards */
+.dashboard-cards { display:flex; flex-wrap:wrap; gap:20px; margin-top:20px; }
+.dashboard-card { flex:1; min-width:150px; color:#fff; padding:20px; border-radius:10px; text-align:center; }
+.dashboard-card h4 { margin-bottom:10px; }
+.dashboard-card p { font-size:1.5rem; margin:0; }
+.dashboard-card.staff { background:#4a90e2; }
+.dashboard-card.admin { background:#357ABD; }
+
+@media (max-width:768px){
+  .sidebar { width:60px; padding-top:10px; }
+  .sidebar h2 { display:none; }
+  .sidebar a { justify-content:center; }
+  .main { margin-left:60px; padding:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>Admin</h2>
+  <a href="#" class="active" onclick="showSection('dashboard', event)"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="#" onclick="showSection('staff', event)"><i class="fas fa-users"></i> Staff</a>
+  <a href="#" onclick="showSection('reports', event)"><i class="fas fa-chart-line"></i> Reports</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+<header>
+  <h2 id="status">Loading...</h2>
+  <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</header>
+
+<!-- Dashboard -->
+<div id="dashboard" class="section card">
+  <h3>Dashboard</h3>
+  <div class="dashboard-cards">
+    <div class="dashboard-card staff">
+      <h4>Total Staff</h4>
+      <p id="totalStaff">0</p>
+    </div>
+    <div class="dashboard-card admin">
+      <h4>Total Admins</h4>
+      <p id="totalAdmins">0</p>
+    </div>
+  </div>
+</div>
+
+<!-- Staff Section -->
+<div id="staff" class="section card" style="display:none;">
+  <button id="showFormBtn" onclick="toggleStaffForm()"><i class="fas fa-user-plus"></i> Create Staff</button>
+  
+  <!-- Staff Form -->
+  <div id="staffForm" style="display:none; margin-top:20px;">
+    <input type="text" id="full_name" placeholder="Full Name" /><br/>
+    <input type="text" id="staff_id" placeholder="Staff ID" /><br/>
+    <input type="text" id="role" placeholder="Role" /><br/>
+    <input type="text" id="department" placeholder="Department" /><br/>
+    <input type="email" id="email" placeholder="Email" /><br/>
+    <input type="text" id="phone" placeholder="Phone Number" /><br/>
+    <label>Staff Image:</label>
+    <input type="file" id="staffImage" accept="image/*" onchange="previewStaffImage(event)" /><br/>
+    <img id="staffImagePreview" src="https://via.placeholder.com/150?text=No+Image" alt="" style="width:150px; margin-top:10px; border-radius:10px;"><br/>
+    <label><input type="checkbox" id="is_admin"/> Is Admin</label><br/>
+    <button onclick="createStaff()"><i class="fas fa-user-plus"></i> Submit</button>
+    <p id="message"></p>
+  </div>
+
+  <!-- Search -->
+  <input type="text" id="staffSearch" placeholder="Search staff..." oninput="filterStaff()" style="margin-top:20px; padding:8px; width:250px; border-radius:6px; border:1px solid #ccc;">
+
+  <!-- Staff Grid -->
+  <h3 style="margin-top:20px;">Staff List</h3>
+  <div id="staffGrid" class="staff-grid"></div>
+</div>
+
+<!-- Reports -->
+<div id="reports" class="section card" style="display:none;">
+  <h3>Reports</h3>
+  <p>Reports will go here (future feature).</p>
+</div>
+</div>
+
+<!-- Staff Modal -->
+<div id="staffModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalName">Staff Details</h3>
+    <input type="text" id="modalFullName" placeholder="Full Name"/>
+    <input type="text" id="modalRole" placeholder="Role"/>
+    <input type="text" id="modalDept" placeholder="Department"/>
+    <input type="email" id="modalEmail" placeholder="Email"/>
+    <input type="text" id="modalPhone" placeholder="Phone"/>
+    <label>Staff Image:</label><br>
+    <img id="modalImagePreview" src="https://dummyimage.com/150x150/cccccc/000000.png&text=No+Image" style="width:100%; max-width:150px; margin-bottom:10px; border-radius:6px;"><br>
+    <input type="file" id="modalImage" accept="image/*" onchange="previewModalImage(event)"><br>
+    <label><input type="checkbox" id="modalAdmin"/> Is Admin</label><br><br>
+    <button onclick="updateStaff()"><i class="fas fa-edit"></i> Update</button>
+    <button onclick="deleteStaff()" style="background:#e74c3c;"><i class="fas fa-trash"></i> Delete</button>
+    <p id="modalMessage"></p>
+  </div>
+</div>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7"></script>
+<script src="js/supabase.js"></script>
+<script src="js/admin.js"></script>
+<script>
+// Full JS is already in admin.js (includes create/update/delete, dashboard counts, modal, search, placeholder images)
+</script>
+
+</body>
+</html>
